@@ -1,7 +1,12 @@
 import Container from "@/components/ui/Container";
 import Navbar from "@/components/ui/Navbar";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
-function page() {
+async function page() {
+  const session = await getServerSession(authOptions);
+  if (session) redirect("dashboard");
   return (
     <Container>
       <Navbar />

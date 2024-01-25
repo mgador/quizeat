@@ -1,4 +1,7 @@
 import "@/styles/global.css";
+import { AuthProvider } from "./Providers";
+// import StoreProvider from "./StoreProvider";
+import StoreProvider from "./StoreProvider";
 
 export const metadata = {
   title: "Quiz Eat",
@@ -9,7 +12,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="" style={{ backgroundColor: "#353D62" }}>
-        {children}
+        <AuthProvider>
+          <StoreProvider>{children}</StoreProvider>
+        </AuthProvider>
       </body>
     </html>
   );
