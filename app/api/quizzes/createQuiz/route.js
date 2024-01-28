@@ -9,9 +9,10 @@ export async function POST(req) {
     authorId,
     description,
     questions,
-    timeLimit,
-    category,
     health,
+    category,
+    time,
+    takes,
   } = await req.json();
 
   await connectDB();
@@ -21,9 +22,10 @@ export async function POST(req) {
     authorId,
     description,
     questions,
-    timeLimit,
-    category,
     health,
+    category,
+    time,
+    takes,
   });
 
   return NextResponse.json({ message: "Quiz Created" }, { status: 201 });

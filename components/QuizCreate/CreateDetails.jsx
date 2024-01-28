@@ -13,8 +13,9 @@ import {
 import { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import categories from "@/public/assets/categories";
 
-function CreateDetails(props) {
+function CreateDetails() {
   const quiz = useSelector((state) => state.quiz);
   const dispatch = useDispatch();
   const [err, setErr] = useState(false);
@@ -80,35 +81,17 @@ function CreateDetails(props) {
       return;
     }
 
-    if (timer && quiz.timeLimit === "") {
+    if (timer && quiz.time === "") {
       setErr(true);
       setMsg("Provide a time for quiz timer");
       return;
-    } else if (timer && isNaN(quiz.timeLimit)) {
+    } else if (timer && isNaN(quiz.time)) {
       setErr(true);
       setMsg("Provide a minute format time on time limit");
       return;
     }
-
-    console.log(quiz);
     router.push("/createQuiz/questions");
   }
-
-  const categories = [
-    "Mathematics",
-    "Science",
-    "Engineering",
-    "Philosophy",
-    "Business",
-    "Humanities",
-    "Arts & Literature",
-    "Physical Education",
-    "Development",
-    "Law",
-    "Economics",
-    "Psychology",
-    "Communication",
-  ];
 
   return (
     <div className="">
@@ -143,7 +126,7 @@ function CreateDetails(props) {
               }`}
               placeholder={timer ? "Format: Minutes" : "Timer Disabled"}
               onChange={(e) => handleChange(e)}
-              value={quiz.timeLimit}
+              value={quiz.time}
             />
           </div>
         </div>

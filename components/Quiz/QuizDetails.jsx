@@ -1,5 +1,9 @@
 "use client";
+
+import { useRouter } from "next/navigation";
+
 function QuizDetails(props) {
+  const router = useRouter();
   return (
     <dialog id="quizDetails" className="modal static">
       <div className="modal-box w-2/4 h-3/4">
@@ -17,7 +21,9 @@ function QuizDetails(props) {
         <button
           className="btn btn-primary bottom-0 left-0 absolute w-full"
           value={props.quizId}
-          onClick={() => console.log(props.data)}
+          onClick={() => {
+            router.push(`/quizeat/${props.quizId}`);
+          }}
         >
           Take Quiz
         </button>

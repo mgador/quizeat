@@ -1,13 +1,15 @@
 "use client";
 
+import { FaClock, FaHeart, FaPen } from "react-icons/fa";
+
 function QuizItem(props) {
-  const description =
-    props.description.length > 50
-      ? `${props.description.slice(0, 50)}...`
-      : props.description;
+  // const description =
+  //   props.description.length > 50
+  //     ? `${props.description.slice(0, 50)}...`
+  //     : props.description;
 
   return (
-    <div className=" card w-40 bg-base-100 me-3">
+    <div className=" card w-40 bg-base-100 me-3 mb-3">
       <figure className="relative">
         <img
           src="/assets/images/quiz_placeholder.jpg"
@@ -22,10 +24,25 @@ function QuizItem(props) {
         <p className="absolute top-0 left-0 ms-2 text-slate-500">
           @{props.author}
         </p>
-        <p className="text-sm justify-center">{description}</p>
+        <p className=" text-xs justify-center">
+          <span>
+            <FaClock className="inline me-1" />
+            {isNaN(props.time) || props.time === ""
+              ? "No Time Limit"
+              : props.time + "min"}
+          </span>
+        </p>
+        <p className="text-xs justify-center">
+          <FaHeart className="inline me-1" />
+          {isNaN(props.health) ? "Unlimited" : props.health}
+        </p>
+        <p className="text-xs justify-center mb-5">
+          <FaPen className="inline me-1" />
+          {isNaN(props.takes) ? "Unlimited" : props.takes}
+        </p>
         <div className="card-actions">
           <button
-            className="btn btn-primary text-center"
+            className="btn btn-primary text-center absolute bottom-0 btn-block left-0"
             value={props.quizId}
             onClick={(e) => {
               props.clickHandler(e.target.value);

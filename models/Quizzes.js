@@ -7,10 +7,10 @@ const quizzesSchema = new Schema({
   author: String,
   authorId: String,
   description: String,
-  takes: String || Number,
+  takes: String,
   health: String,
   category: String,
-  timeLimit: String,
+  time: String,
   participants: [
     {
       name: String,

@@ -19,6 +19,7 @@ function CreateQuiz() {
       body: JSON.stringify(quiz),
     });
 
+    console.log(quiz);
     if (res.ok) {
       router.push("/dashboard");
     }

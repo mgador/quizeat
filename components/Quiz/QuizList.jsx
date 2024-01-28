@@ -22,6 +22,7 @@ function QuizList() {
   async function handleClick(id) {
     const res = await fetch(`/api/quizzes/${id}`);
     const data = await res.json();
+    console.log(data.quiz);
     setQuiz(data.quiz);
   }
 
@@ -35,6 +36,9 @@ function QuizList() {
           author={item.author}
           description={item.description}
           quizId={item._id}
+          time={item.time}
+          health={item.health}
+          takes={item.takes}
           clickHandler={handleClick}
         />
       ))}
