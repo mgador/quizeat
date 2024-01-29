@@ -30,13 +30,13 @@ function DashboardNav() {
           <DashboardSideNav />
         </div>
         <div className="flex-none max-sm:hidden">
-          <Link href="/dashboard" className=" text-white text-xl">
-            🎮 QuizEat
+          <Link href="/dashboard" className=" text-white text-xl font-bold">
+            🎮 QuizCraft
           </Link>
         </div>
       </div>
       <div className="flex-none gap-2">
-        <SearchBar />
+        {pathname !== "/dashboard" && <SearchBar />}
         <div className="dropdown dropdown-end">
           <div
             tabIndex={0}

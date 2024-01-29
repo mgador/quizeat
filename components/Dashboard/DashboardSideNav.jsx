@@ -21,8 +21,8 @@ function DashboardSideNav() {
         ></label>
         <ul className="menu p-3 w-80 min-h-full bg-base-200 text-base-content">
           <li className=" mb-3.5">
-            <Link href="/dashboard" className=" text-white text-xl">
-              🎮 QuizEat
+            <Link href="/dashboard" className=" text-white text-xl font-bold">
+              🎮 QuizCraft
             </Link>
           </li>
           <li>

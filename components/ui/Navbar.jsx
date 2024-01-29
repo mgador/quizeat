@@ -11,8 +11,8 @@ function Navbar() {
   const pathname = usePathname();
   return (
     <nav className="flex justify-between text-white mt-1.5 items-center ">
-      <h1 className="font-bold text-xl">🎮 QuizEat</h1>
-      <div className="md:space-x-20">
+      <h1 className="font-bold text-xl">🎮 QuizCraft</h1>
+      {/* <div className="md:space-x-20">
         {links.map((link) => {
           return (
             <Link
@@ -24,7 +24,8 @@ function Navbar() {
             </Link>
           );
         })}
-      </div>
+      </div> */}
+      <div className=" max-sm:hidden"></div>
       <div className="">
         <Link href="/login" className="me-2">
           Log in

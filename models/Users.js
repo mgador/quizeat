@@ -2,12 +2,15 @@ import mongoose from "mongoose";
 
 const { Schema } = mongoose;
 
-const userSchema = new Schema({
-  name: String,
-  username: String,
-  email: String,
-  password: String,
-});
+const userSchema = new Schema(
+  {
+    name: String,
+    username: String,
+    email: String,
+    password: String,
+  },
+  { timestamps: true }
+);
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 

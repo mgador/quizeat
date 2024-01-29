@@ -2,10 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 
-function Timer({ initialTime }) {
+function Timer({ initialTime, handleTimesUp }) {
   const [time, setTime] = useState(initialTime * 60); // Convert minutes to seconds
 
   useEffect(() => {
+    if (time <= 0) {
+      handleTimesUp();
+    }
+
     let interval;
 
     if (time > 0) {
