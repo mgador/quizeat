@@ -1,11 +1,13 @@
 "use client";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
+import DashboardNav from "./DashboardNav";
 
 function Dashboard() {
   const { data: session } = useSession();
   return (
     <div className=" h-screen">
+      <DashboardNav />
       <div className="hero min-h-screen relative">
         <div className="text-center">
           <div className="max-w-md max-md:mb-60">
@@ -22,7 +24,7 @@ function Dashboard() {
             </Link>
           </div>
         </div>
-        <footer className="footer p-10 bg-neutral text-neutral-content absolute bottom-0">
+        <footer className="footer p-10 bg-base-200 text-neutral-content absolute bottom-0">
           <aside>
             <svg
               width="50"

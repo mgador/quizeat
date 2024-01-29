@@ -6,6 +6,7 @@ import Timer from "./Timer";
 import Health from "./Health";
 import { IoMdInfinite } from "react-icons/io";
 import EndQuizModal from "./EndQuizModal";
+import { getSession } from "next-auth/react";
 
 function TakeQuiz() {
   const [data, setData] = useState({});
@@ -43,20 +44,37 @@ function TakeQuiz() {
     document.getElementById("endquiz").showModal();
   }
 
-  function submitAnswer() {
-    if (number === questions.length - 1) {
-      if (answer.toLowerCase() === questions[number].answer.toLowerCase()) {
-        changeBackgroundColor("bg-green-500");
-        setScore((prev) => prev + 1);
-      }
+  async function finishQuiz() {
+    let updatedScore = score;
+    if (answer.toLowerCase() === questions[number].answer.toLowerCase()) {
+      changeBackgroundColor("bg-green-500");
+      updatedScore++;
+      setScore((prev) => prev + 1);
+    } else {
       changeBackgroundColor("bg-red-500");
-
-      // TODO: POST TO QUIZ PARTICIPANTS
-      setMessage("Congratulations!");
-      document.getElementById("endquiz").showModal();
-      return;
     }
 
+    try {
+      const session = await getSession();
+      const res = await fetch(`/api/quizzes/${params.id}`, {
+        method: "PATCH",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({
+          name: session?.user?.name,
+          participantId: session?.user?.id,
+          score: updatedScore,
+        }),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+
+    setMessage("Congratulations!");
+    document.getElementById("endquiz").showModal();
+    return;
+  }
+
+  async function submitAnswer() {
     if (answer.toLowerCase() === questions[number].answer.toLowerCase()) {
       changeBackgroundColor("bg-green-500");
       setAnswer("");
@@ -72,85 +90,100 @@ function TakeQuiz() {
 
   return (
     <div className={`${background} p-3 relative h-screen`}>
-      <div className="ps-3 py-3 border border-primary rounded w-2/12">
-        {isNaN(data.time) || data.time === "" ? (
-          <p className="text-lg">
-            Remaining Time:{" "}
-            <IoMdInfinite className="inline text-3xl text-blue-600" />
-          </p>
-        ) : (
-          <Timer initialTime={data.time} handleTimesUp={handleTimesUp} />
-        )}
-        {isNaN(health) ? (
-          <p className="text-lg">
-            HP: <IoMdInfinite className="inline text-3xl text-red-600" />
-          </p>
-        ) : (
-          <Health points={health} />
-        )}
-        <p className="text-lg">Score: {score}</p>
-      </div>
-      <div className="text-center mt-5">
-        <h1 className=" text-4xl text-blue-500 mb-5">Question</h1>
-        <p className="text-2xl mb-40">{questions[number].question}</p>
-        {questions[number].questionType === "identification" && (
-          <input
-            type="text"
-            placeholder="Type your answer here"
-            value={answer}
-            className="input input-primary"
-            onChange={(e) => setAnswer(e.target.value)}
-          />
-        )}
-        {questions[number].questionType === "multipleChoice" && (
-          <div className="text-center">
-            {questions[number].choices.map((choice) => (
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          finishQuiz();
+        }}
+      >
+        <div className="ps-3 py-3 border border-primary rounded w-2/12">
+          {isNaN(data.time) || data.time === "" ? (
+            <p className="text-lg">
+              Remaining Time:{" "}
+              <IoMdInfinite className="inline text-3xl text-blue-600" />
+            </p>
+          ) : (
+            <Timer initialTime={data.time} handleTimesUp={handleTimesUp} />
+          )}
+          {isNaN(health) ? (
+            <p className="text-lg">
+              HP: <IoMdInfinite className="inline text-3xl text-red-600" />
+            </p>
+          ) : (
+            <Health points={health} />
+          )}
+          <p className="text-lg">Score: {score}</p>
+        </div>
+        <div className="text-center mt-5">
+          <h1 className=" text-4xl text-blue-500 mb-5">Question</h1>
+          <p className="text-2xl mb-40">{questions[number].question}</p>
+          {questions[number].questionType === "identification" && (
+            <input
+              type="text"
+              placeholder="Type your answer here"
+              value={answer}
+              className="input input-primary"
+              onChange={(e) => setAnswer(e.target.value)}
+            />
+          )}
+          {questions[number].questionType === "multipleChoice" && (
+            <div className="text-center">
+              {questions[number].choices.map((choice) => (
+                <button
+                  className={`btn btn-primary me-1${
+                    answer === choice
+                      ? " bg-indigo-700 text-white hover:bg-indigo-700"
+                      : ""
+                  }`}
+                  onClick={() => setAnswer(choice)}
+                  type="button"
+                >
+                  {choice}
+                </button>
+              ))}
+            </div>
+          )}
+          {questions[number].questionType === "tof" && (
+            <div>
               <button
-                className={`btn btn-primary me-1${
-                  answer === choice
-                    ? " bg-indigo-700 text-white hover:bg-indigo-700"
+                className={`btn btn-primary me-3 ${
+                  answer === "true"
+                    ? "bg-indigo-700 text-white hover:bg-indigo-700"
                     : ""
                 }`}
-                onClick={(e) => setAnswer(choice)}
+                value="true"
+                onClick={() => setAnswer("true")}
+                type="button"
               >
-                {choice}
+                True
               </button>
-            ))}
-          </div>
+              <button
+                className={`btn btn-primary  ${
+                  answer === "false"
+                    ? "bg-indigo-700 text-white hover:bg-indigo-700"
+                    : ""
+                }`}
+                value="false"
+                onClick={() => setAnswer("false")}
+                type="button"
+              >
+                False
+              </button>
+            </div>
+          )}
+        </div>
+        {number < questions.length && (
+          <button
+            className="absolute bottom-5 right-5 btn btn-primary text-white "
+            type={"button"}
+            onClick={() =>
+              number < questions.length - 1 ? submitAnswer() : finishQuiz()
+            }
+          >
+            {number < questions.length - 1 ? "Next Question" : "Finish"}
+          </button>
         )}
-        {questions[number].questionType === "tof" && (
-          <div>
-            <button
-              className={`btn btn-primary me-3 ${
-                answer === "true"
-                  ? "bg-indigo-700 text-white hover:bg-indigo-700"
-                  : ""
-              }`}
-              value="true"
-              onClick={() => setAnswer("true")}
-            >
-              True
-            </button>
-            <button
-              className={`btn btn-primary  ${
-                answer === "false"
-                  ? "bg-indigo-700 text-white hover:bg-indigo-700"
-                  : ""
-              }`}
-              value="false"
-              onClick={() => setAnswer("false")}
-            >
-              False
-            </button>
-          </div>
-        )}
-      </div>
-      <button
-        className="absolute bottom-5 right-5 btn btn-primary text-white "
-        onClick={submitAnswer}
-      >
-        {number < questions.length - 1 ? "Next Question" : "Finish"}
-      </button>
+      </form>
 
       <progress
         className="progress w-full left-0 bottom-0 absolute"

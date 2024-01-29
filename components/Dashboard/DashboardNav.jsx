@@ -1,12 +1,11 @@
 "use client";
-import { getSession, signOut, useSession } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import DashboardSideNav from "./DashboardSideNav";
-import SearchBar from "../ui/SearchBar";
 
-function DashboardNav() {
+function DashboardNav({ children }) {
   // const { data: session } = useSession();
   const pathname = usePathname();
   const [data, setData] = useState();
@@ -36,7 +35,7 @@ function DashboardNav() {
         </div>
       </div>
       <div className="flex-none gap-2">
-        {pathname !== "/dashboard" && <SearchBar />}
+        {children}
         <div className="dropdown dropdown-end">
           <div
             tabIndex={0}

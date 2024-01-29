@@ -1,26 +1,30 @@
 "use client";
 
 import { useSelector } from "react-redux";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import CreateQuestions from "./CreateQuestions";
 import QuestionList from "./QuestionList";
+import { resetQuiz } from "@/lib/quizSlice";
+import { resetQuestion } from "@/lib/questionSlice";
 
 function CreateQuiz() {
   const quiz = useSelector((state) => state.quiz);
   const router = useRouter();
+  const pathname = usePathname();
 
   async function createQuiz() {
     const res = await fetch("/api/quizzes/createQuiz", {
-      method: "POST",
+      method: `${pathname === "/createQuiz/questions" ? "POST" : "PATCH"}`,
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(quiz),
     });
 
-    console.log(quiz);
     if (res.ok) {
+      resetQuiz();
+      resetQuestion();
       router.push("/dashboard");
     }
   }
@@ -46,7 +50,7 @@ function CreateQuiz() {
         className="btn btn-primary mt-3 btn-lg float-end"
         onClick={createQuiz}
       >
-        Create Quiz
+        {pathname === "/createQuiz/questions" ? "Create Quiz" : "Update Quiz"}
       </button>
     </div>
   );

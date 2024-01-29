@@ -2,7 +2,7 @@ import QuizList from "@/components/Quiz/QuizList";
 
 function page() {
   return (
-    <div className="">
+    <div>
       <QuizList />
     </div>
   );

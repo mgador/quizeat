@@ -1,15 +1,27 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { FaClock, FaHeart, FaPen } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import {
+  setAuthor,
+  setAuthorId,
+  setTitle,
+  setDescription,
+  setTakes,
+  setQuestions,
+  setId,
+} from "@/lib/quizSlice";
+import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 function QuizItem(props) {
-  // const description =
-  //   props.description.length > 50
-  //     ? `${props.description.slice(0, 50)}...`
-  //     : props.description;
+  const pathname = usePathname();
+  const dispatch = useDispatch();
+  const router = useRouter();
 
   return (
-    <div className=" card w-40 bg-base-100 me-3 mb-3">
+    <div className=" card w-48 bg-base-100 mb-5 max-sm:w-64 sm:w-64 md:w-56 lg:w-52 xl:w-48">
       <figure className="relative">
         <img
           src="/assets/images/quiz_placeholder.jpg"
@@ -36,22 +48,37 @@ function QuizItem(props) {
           <FaHeart className="inline me-1" />
           {isNaN(props.health) ? "Unlimited" : props.health}
         </p>
-        <p className="text-xs justify-center mb-5">
+        <p className="text-xs justify-center mb-14">
           <FaPen className="inline me-1" />
           {isNaN(props.takes) ? "Unlimited" : props.takes}
         </p>
-        <div className="card-actions">
-          <button
-            className="btn btn-primary text-center absolute bottom-0 btn-block left-0"
-            value={props.quizId}
-            onClick={(e) => {
+        <div className="card-actions justify-end">
+          <div className="border border-outline rounded-full mb-7 p-1 text-xs text-center absolute bottom-7 right-2">
+            <p>{props.category}</p>
+          </div>
+        </div>
+        <button
+          className="btn btn-primary text-center absolute bottom-0 btn-block left-0"
+          value={props.quizId}
+          onClick={async (e) => {
+            if (pathname === "/dashboard/quizzes") {
               props.clickHandler(e.target.value);
               document.getElementById("quizDetails").showModal();
-            }}
-          >
-            Details
-          </button>
-        </div>
+            } else {
+              const session = await getSession();
+              dispatch(setAuthor(session.user.name));
+              dispatch(setAuthorId(session.user.id));
+              dispatch(setTitle(props.title));
+              dispatch(setDescription(props.description));
+              dispatch(setTakes(props.takes));
+              dispatch(setQuestions(props.questions));
+              dispatch(setId(props.quizId));
+              router.push("/dashboard/myQuizzes/edit");
+            }
+          }}
+        >
+          {pathname === "/dashboard/quizzes" ? "Details" : "Edit"}
+        </button>
       </div>
     </div>
   );

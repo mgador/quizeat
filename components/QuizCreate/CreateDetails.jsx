@@ -12,7 +12,7 @@ import {
 } from "@/lib/quizSlice";
 import { useEffect, useState } from "react";
 import { getSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import categories from "@/public/assets/categories";
 
 function CreateDetails() {
@@ -22,6 +22,7 @@ function CreateDetails() {
   const [msg, setMsg] = useState("");
   const [timer, setTimer] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     async function setAuthorDetails() {
@@ -90,7 +91,12 @@ function CreateDetails() {
       setMsg("Provide a minute format time on time limit");
       return;
     }
-    router.push("/createQuiz/questions");
+
+    if (pathname === "/createQuiz") {
+      router.push("/createQuiz/questions");
+    } else {
+      router.push("/dashboard/myQuizzes/edit/questions");
+    }
   }
 
   return (

@@ -4,7 +4,7 @@ function layout({ children }) {
   return (
     <div className="">
       {children}
-      <QuizDetails />
+      {/* <QuizDetails /> */}
     </div>
   );
 }
