@@ -14,11 +14,29 @@ import {
 } from "@/lib/quizSlice";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useState } from "react";
 
 function QuizItem(props) {
   const pathname = usePathname();
   const dispatch = useDispatch();
   const router = useRouter();
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    async function checkCount() {
+      const session = await getSession();
+      let count = 0;
+      props.participants?.forEach((participant) => {
+        if (participant.participantId === session.user.id) {
+          count++;
+        }
+      });
+      setCount(count);
+    }
+
+    checkCount();
+  }, []);
 
   return (
     <div className=" card w-48 bg-base-100 mb-5 max-sm:w-64 sm:w-64 md:w-56 lg:w-52 xl:w-48">
@@ -36,6 +54,7 @@ function QuizItem(props) {
         <p className="absolute top-0 left-0 ms-2 text-slate-500">
           @{props.author}
         </p>
+        <button onClick={() => console.log(count)}>try</button>
         <p className=" text-xs justify-center">
           <span>
             <FaClock className="inline me-1" />
@@ -58,7 +77,11 @@ function QuizItem(props) {
           </div>
         </div>
         <button
-          className="btn btn-primary text-center absolute bottom-0 btn-block left-0"
+          className={`btn btn-primary text-center absolute bottom-0 btn-block left-0 ${
+            count >= props.takes && pathname !== "/dashboard/myQuizzes"
+              ? " pointer-events-none brightness-50"
+              : ""
+          }`}
           value={props.quizId}
           onClick={async (e) => {
             if (pathname === "/dashboard/quizzes") {
@@ -77,7 +100,9 @@ function QuizItem(props) {
             }
           }}
         >
-          {pathname === "/dashboard/quizzes" ? "Details" : "Edit"}
+          {pathname === "/dashboard/myQuizzes"
+            ? "Edit"
+            : `${count >= props.takes ? "Participated" : "Details"}`}
         </button>
       </div>
     </div>

@@ -107,6 +107,11 @@ function QuizList() {
               health={item.health}
               takes={item.takes}
               questions={item.questions}
+              participants={item.participants}
+              participantId={async () => {
+                const session = await getSession();
+                return session.user.id;
+              }}
               clickHandler={handleClick}
             />
           ))}

@@ -32,6 +32,32 @@ function TakeQuiz() {
     getQuestions();
   }, []);
 
+  useEffect(() => {
+    async function recordQuiz() {
+      try {
+        const session = await getSession();
+        const res = await fetch(`/api/quizzes/${params.id}`, {
+          method: "PATCH",
+          headers: { "Content-type": "application/json" },
+          body: JSON.stringify({
+            name: session?.user?.name,
+            participantId: session?.user?.id,
+            score: score,
+          }),
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    if (health === 0) {
+      recordQuiz();
+      const audio = new Audio("/assets/audio/failed.mp3");
+      audio.play();
+      setMessage("Better luck next time!");
+      document.getElementById("endquiz").showModal();
+    }
+  }, [health]);
+
   const changeBackgroundColor = (color) => {
     setBackground(color);
     setTimeout(() => {
@@ -39,8 +65,25 @@ function TakeQuiz() {
     }, 500);
   };
 
-  function handleTimesUp() {
+  async function handleTimesUp() {
     setMessage("Times Up!");
+
+    try {
+      const session = await getSession();
+      const res = await fetch(`/api/quizzes/${params.id}`, {
+        method: "PATCH",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({
+          name: session?.user?.name,
+          participantId: session?.user?.id,
+          score: score,
+        }),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+    const audio = new Audio("/assets/audio/failed.mp3");
+    audio.play();
     document.getElementById("endquiz").showModal();
   }
 
@@ -70,6 +113,8 @@ function TakeQuiz() {
     }
 
     setMessage("Congratulations!");
+    const audio = new Audio("/assets/audio/complete.wav");
+    audio.play();
     document.getElementById("endquiz").showModal();
     return;
   }
@@ -78,12 +123,16 @@ function TakeQuiz() {
     if (answer.toLowerCase() === questions[number].answer.toLowerCase()) {
       changeBackgroundColor("bg-green-500");
       setAnswer("");
+      const audio = new Audio("/assets/audio/correctAnswer.wav");
+      audio.play();
       setScore((prev) => prev + 1);
       setNumber((prev) => prev + 1);
       return;
     }
     changeBackgroundColor("bg-red-500");
     setAnswer("");
+    const audio = new Audio("/assets/audio/wrongAnswer.wav");
+    audio.play();
     setHealth((prev) => prev - 1);
     setNumber((prev) => prev + 1);
   }
@@ -96,7 +145,7 @@ function TakeQuiz() {
           finishQuiz();
         }}
       >
-        <div className="ps-3 py-3 border border-primary rounded w-2/12">
+        <div className="ps-3 py-3 border border-primary rounded xl:w-2/12 lg:w-3/12 md:w-4/12 max-sm:text-center max-md:text-center">
           {isNaN(data.time) || data.time === "" ? (
             <p className="text-lg">
               Remaining Time:{" "}
@@ -114,9 +163,11 @@ function TakeQuiz() {
           )}
           <p className="text-lg">Score: {score}</p>
         </div>
-        <div className="text-center mt-5">
-          <h1 className=" text-4xl text-blue-500 mb-5">Question</h1>
-          <p className="text-2xl mb-40">{questions[number].question}</p>
+        <div className="text-center">
+          <div className="bg-base-200 xl:w-7/12 rounded text-center mx-auto py-7 my-5 lg:w-6/12">
+            <h1 className=" text-4xl text-blue-500 mb-5">Question</h1>
+            <p className="text-2xl">{questions[number].question}</p>
+          </div>
           {questions[number].questionType === "identification" && (
             <input
               type="text"
@@ -127,10 +178,10 @@ function TakeQuiz() {
             />
           )}
           {questions[number].questionType === "multipleChoice" && (
-            <div className="text-center">
+            <div className="text-center grid lg:grid-cols-2">
               {questions[number].choices.map((choice) => (
                 <button
-                  className={`btn btn-primary me-1${
+                  className={`btn btn-primary me-3 mb-3${
                     answer === choice
                       ? " bg-indigo-700 text-white hover:bg-indigo-700"
                       : ""
@@ -144,9 +195,9 @@ function TakeQuiz() {
             </div>
           )}
           {questions[number].questionType === "tof" && (
-            <div>
+            <div className="grid grid-cols-2 max-sm:grid-cols-1">
               <button
-                className={`btn btn-primary me-3 ${
+                className={`btn btn-primary lg:me-3 max-sm:mb-3${
                   answer === "true"
                     ? "bg-indigo-700 text-white hover:bg-indigo-700"
                     : ""

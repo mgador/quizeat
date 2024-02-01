@@ -61,7 +61,7 @@ function DashboardNav({ children }) {
                     pathname === "/dashboard/profile"
                       ? "bg-slate-600 pointer-events-none"
                       : ""
-                  } justify-between`}
+                  } justify-between btn-disabled`}
               >
                 Profile
                 <span className="badge">{`@${data?.username}`}</span>
@@ -75,7 +75,7 @@ function DashboardNav({ children }) {
                     pathname === "/dashboard/settings"
                       ? "bg-slate-600 pointer-events-none"
                       : ""
-                  } justify-between`}
+                  } justify-between btn-disabled`}
               >
                 Settings
               </Link>
